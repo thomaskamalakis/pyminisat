@@ -10,4 +10,4 @@ s = satsim()
 s.simulate()
 s.plot_rmin(close_all=True)
 s.plot_results()
-
+plt.show()
