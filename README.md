@@ -10,17 +10,17 @@ sudo apt install python3-pip
 ```
 Then install the `virtualenv` package using
 ```
-pip3 install virtualenv
+pip3 install venv
 ```
 or if you are on an externally managed environment, use:
 ```
-sudo apt install python3-virtualenv
+sudo apt install python3-venv
 ```
 In a folder of your choosing, clone the repo using
 ```
 git clone https://github.com/thomaskamalakis/pyminisat
 ```
-
+Now, start a virtual environment 
 
 
 
