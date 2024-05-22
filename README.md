@@ -22,7 +22,7 @@ git clone https://github.com/thomaskamalakis/pyminisat
 ```
 Now, create a virtual environment in the folder
 ```
-python3 -m venv pymini
+python3 -m venv venv
 ```
 
 
