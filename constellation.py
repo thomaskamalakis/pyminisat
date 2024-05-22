@@ -13,8 +13,11 @@ from mpl_toolkits.mplot3d.axes3d import Axes3D
 import matplotlib.pyplot as plt
 from multiprocessing import Pool
 import os
-class Arrow3D(FancyArrowPatch):
 
+class Arrow3D(FancyArrowPatch):
+    """
+    A class used to draw a 3D arrow in the constellation visualizations
+    """
     def __init__(self, x, y, z, dx, dy, dz, *args, **kwargs):
         super().__init__((0, 0), (0, 0), *args, **kwargs)
         self._xyz = (x, y, z)
@@ -49,14 +52,19 @@ setattr(Axes3D, 'arrow3D', _arrow3D)
 co = constants()
 
 class constellation:
-    
+    """
+    The constellation class can be used to determine the satellite positions
+    for each moment of time
+    """
     def __init__(self,
-                 alt = 550e3,
-                 Nsat = 66,
-                 Norb = 24,
-                 F = 13,
-                 i = 53 * np.pi / 180):
-        
+                 alt = 550e3,               # satellite altitude [m]
+                 Nsat = 66,                 # number of satellites per orbit
+                 Norb = 24,                 # number of orbits
+                 F = 13,                    # F-parameter to be used initially
+                 i = 53 * np.pi / 180,      # inclination [rad]
+                 orb = 0,                   # default satellite orbit to be used in the estimations
+                 sat = 0,                   # satellite within this orbit to be used in the estimations
+                 Nt = 10000):               # number of points in the time axis assumed
         self.alt = alt
         self.r = self.alt + co.Rearth
         self.T = 2 * np.pi * self.r ** (3/2) / np.sqrt(co.mu)
@@ -66,6 +74,11 @@ class constellation:
         self.N = self.Nsat * self.Norb
         self.F = F
         self.i = i
+        self.sat = sat
+        self.orb = orb
+        self.Nt = Nt
+        
+        self.t = np.linspace(0, self.T, self.Nt)
         k = np.arange( self.Norb )
         self.k = k        
         self.Wk = 2 * np.pi * k / self.Norb
@@ -84,8 +97,8 @@ class constellation:
         
         self.calc_init_anomalies()
   
+    # Calculate the initial values of the satellite anomalies    
     def calc_init_anomalies(self):
-        
         self.theta_km0 = 2 * np.pi * (self.mm) / self.Nsat + 2 * np.pi * (self.kk) * self.F / self.N       
         
     def calc_anomalies(self, t):
@@ -279,23 +292,6 @@ class constellation:
            'S1' : ( orb, i_same[1] ),
            'S2' : ( orb, i_same[2] )
         }
-        
-    # def sat_grid(self, orb, sat):
-    #     ps = self.prev_sat(sat)
-    #     ns = self.next_sat(sat)
-    #     po = self.prev_sat(orb)
-    #     no = self.next_sat(orb)
-    #     return {
-    #         'S1' : (orb,sat),
-    #         'S2' : (orb,ns ),
-    #         'S6' : (no, ns ),
-    #         'S5' : (no, sat),
-    #         'S4' : (no, ps),
-    #         'S3' : (orb, ps),
-    #         'S7' : (po, ps),
-    #         'S8' : (po, sat),
-    #         'S9' : (po, ns)
-    #         }
     
     def grid_dists(self, orb, sat, Nt = 10000):
         g = self.sat_grid(orb, sat)

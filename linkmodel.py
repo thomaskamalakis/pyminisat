@@ -1,36 +1,28 @@
 import numpy as np
 from scipy.special import erfinv, erfc
 from constants import constants as co
+from utils import Q, invQ, to_linear, to_dB, to_dBm
+"""
+Here we implement the transmitter, receiver and link classes
+"""
 
-def invQ(y):
-    return np.sqrt(2)*erfinv(1-2*y)
-
-def Q(x):
-    return 0.5 * erfc(x / np.sqrt(2))
-
-def to_l(x):
-    return 10 ** (x/10)
-
-def to_dB(x):
-    return 10 * np.log10(x)
-    
-def to_dBm(x):
-    return 10 * np.log10(x/1e-3)
 
 class receiver:
-    
+    """
+    Basic receiver class
+    """
     def __init__(self, 
-                 target_BER = 1e-12,
-                 l = 1.55e-6,
-                 eta = 0.8,
-                 redB = 20,
-                 Rb = 10e9,
-                 RL = 100,
-                 FndB = 3,
-                 TK = 300,
-                 DR = 80e-3,
-                 nR = 0.8,
-                 sR = 1e-6):
+                 target_BER = 1e-12,    # target BER
+                 l = 1.55e-6,           # opweration wavelength [m]
+                 eta = 0.8,             # internal quantum efficiency
+                 redB = 20,             # assumed extinction ratio [dB]
+                 Rb = 10e9,             # data rate [b/s]
+                 RL = 100,              # load resistor [Ohm]
+                 FndB = 3,              # noise figure [dB]
+                 TK = 300,              # absolute temperature [K]
+                 DR = 80e-3,            # receiver aperture diameter [m]
+                 nR = 0.8,              # receiver efficiency
+                 sR = 1e-6):            # receiver pointing error [rad]
         
         self.target_BER = target_BER
         self.l = l
@@ -48,13 +40,13 @@ class receiver:
         self.GRdB = to_dB(self.GR)
         self.LRdB = to_dB(self.LR)
         
-        
+    # Estimate receiver sensitivity
     def calc_Psens(self):         
         # Calculate some auxiliary parameters
         self.Be = self.Rb/2
         self.target_g = invQ( self.target_BER ) 
-        self.Fn  = to_l(self.FndB)
-        self.re = to_l(self.redB)
+        self.Fn  = to_linear(self.FndB)
+        self.re = to_linear(self.redB)
         self.f = co.c /  self.l
         self.R = self.eta * co.qe / (co.hP * self.f)
         
@@ -67,7 +59,8 @@ class receiver:
         # Estimation of the receiver sensitivty
         self.Psens = self.d ** 2 * (self.a0 + self.a1) + 2 * self.d * np.sqrt( self.d ** 2 * self.a0 * self.a1 + self.sth2)
         self.Psens_dBm = to_dBm(self.Psens)   
-    
+
+    # Estimate receiver sensitivity from incident optical power Pavg [W]
     def calc_BER(self, Pavg):
         self.Pavg = Pavg        
         self.P0 = 2 / (self.re + 1) * Pavg
@@ -112,14 +105,17 @@ class receiver:
             return self.__repr__()
 
 class transmitter:
-    
+    """
+    Basic transmitter class
+    """
     def __init__(self,
-                 sT = 1e-6,
-                 theta_T = None,
-                 PT = None,
-                 nT = 0.8):
+                 sT = 1e-6,         # transmitter pointing errors [rad]
+                 theta_T = None,    # beam divergence [rad]
+                 PT = None,         # transmitter optical power [W]
+                 nT = 0.8):         # transmitter efficiency
         
         self.sT = sT
+        # If beam divergence is not specified choose optimal divergence
         if not theta_T:
             theta_T = 4 * self.sT
         self.theta_T = theta_T
@@ -147,12 +143,14 @@ class transmitter:
         def __str__(self):
             return self.__repr__()
 class link:
-
+    """
+    The link class can be used to estimate the link budget for the intersatellite links
+    """
     def __init__(self, 
-                 tx = transmitter(),
-                 rx = receiver(),
-                 R = 1000e3,
-                 LMdB = 3):
+                 tx = transmitter(),        # transmitter object
+                 rx = receiver(),           # receiver object
+                 R = 1000e3,                # tx/rx distance [m]
+                 LMdB = 3):                 # link margin [dB]
     
         self.tx = tx
         self.rx = rx
@@ -160,22 +158,14 @@ class link:
         self.R = R
         self.LMdB = LMdB
         
-
+    # Calculate free space loss and channel gain
     def calc_cg(self):
         self.LPS = (self.l / (4 * np.pi * self.R) ) ** 2 
         self.LPSdB = to_dB(self.LPS)
         self.L = self.tx.nT * self.rx.nR * self.tx.GT * self.rx.GR * self.LPS * self.tx.LT * self.rx.LR
         self.LdB = to_dB(self.L)
     
-    def set_R(self, R):
-        self.R = R
-        
-    def set_PT(self,PT):
-        self.PT = PT
-    
-    def set_PR(self,PR):
-        self.PR = PR
-                   
+    # Required transmission power to maintain the link               
     def calc_required_PT(self):
         if not self.rx.Psens:
             self.rx.calc_Psens()
