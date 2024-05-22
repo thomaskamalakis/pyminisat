@@ -34,7 +34,7 @@ DEFAULTS = {
     'no_cores' : os.cpu_count()
     }
 
-CONSTELLATION_P = ['alt','Nsat','Norb','F','i']
+CONSTELLATION_P = ['alt','Nsat','Norb','F','i', 'orb', 'sat']
 RECEIVER_P = ['target_BER','l','eta','redB','Rb','RL','FndB','TK','DR','nR','sR']
 TRANSMITTER_P = ['sT','theta_T','PT','nT']
 
@@ -92,7 +92,7 @@ class satsim:
         self.constellation.optimize_F(orb = self.orb, sat = self.sat)
 
     def optimize_F_mp(self, plot_result = False):
-        self.constellation.optimize_F_mp(orb = self.orb, sat = self.sat, no_cores=self.no_cores)
+        self.constellation.optimize_F_mp(no_cores=self.no_cores)
 
     def save(self):
             
@@ -110,7 +110,7 @@ class satsim:
         plt.grid()
     
     def calc_grid_dists(self):
-        self.dists = self.constellation.grid_dists(self.orb, self.sat)
+        self.dists = self.constellation.grid_dists()
     
     def calc_dist_power(self):
 

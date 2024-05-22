@@ -165,6 +165,9 @@ class link:
         self.L = self.tx.nT * self.rx.nR * self.tx.GT * self.rx.GR * self.LPS * self.tx.LT * self.rx.LR
         self.LdB = to_dB(self.L)
     
+    # set link distance
+    def set_R(self, R):
+        self.R = R
     # Required transmission power to maintain the link               
     def calc_required_PT(self):
         if not self.rx.Psens:

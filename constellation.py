@@ -94,7 +94,7 @@ class constellation:
         self.z = np.zeros(self.mm.shape)
         
         self.calc_init_anomalies()
-        self.init_time(Nt = self.Nt)
+        self.init_time(Nt = Nt)
         
     # Initialize time axis
     def init_time(self, Nt = 10000):
@@ -224,9 +224,10 @@ class constellation:
         sat_j = np.argsort(r)
         return r[sat_j], sat_j
 
-        
-    def optimize_F(self, Nt = 10000, orb = 0, sat = 0):
-        self.init_time(Nt = Nt)
+    # Optmize the constellation parameter F 
+    def optimize_F(self):
+        orb = self.orb
+        sat = self.sat
         self.rmint = np.zeros([self.Norb, self.Nt])
         
         for F in range(self.Norb):
@@ -241,17 +242,19 @@ class constellation:
         self.F = np.argmin(self.rmin)
         self.calc_init_anomalies()
     
+    # Estimate the distances of all satellites from satellite (self.orb, self.sat)
     def calc_r(self, F):
         self.F = F
         self.calc_init_anomalies()
         r = np.zeros(self.t.size)
         for i, t in enumerate(self.t):
             self.calc_pos(t)
-            r[i] = self.calc_nearest_dist(0, 0)
+            r[i] = self.calc_nearest_dist(self.orb, self.sat)
         return r
-        
-    def optimize_F_mp(self, Nt=1000, orb=0, sat=0, no_cores = None):
-        self.init_time(Nt = Nt)        
+    
+    # Similar to optimize_F but this time uses Python multiprocessing
+    def optimize_F_mp(self, no_cores = None):
+      
         if not no_cores:
             no_cores = os.cpu_count()
             
@@ -259,23 +262,28 @@ class constellation:
         F = np.arange(self.Norb)        
 
         self.rmint=np.array(pool.map(self.calc_r, F))
-
         self.rmin = np.min(self.rmint,axis=1)        
         self.F = np.argmax(self.rmin)
         self.calc_init_anomalies            
     
+    # next satellite in the same orbit
     def next_sat(self, sat):
         return sat+1 if sat < self.Nsat - 1 else 0
-    
+ 
+    # previous satellite in the same orbit
     def prev_sat(self, sat):
         return sat-1 if sat > 0 else self.Nsat
     
+    # next orbit
     def next_orb(self, orb):
         return orb+1 if orb < self.Norb - 1 else 0
     
+    # previous orbit    
     def prev_orb(self, orb):
         return orb-1 if orb > 0 else self.Norb
     
+    # Nearby satellite 3x3 grid formed by the two closest intra-orbit satellites
+    # and the closest three upper and three lower orbit satellites
     def sat_grid(self, orb, sat):
         self.calc_pos(0)
         next_orb = self.next_orb(orb)
@@ -295,13 +303,14 @@ class constellation:
            'S2' : ( orb, i_same[2] )
         }
     
-    def grid_dists(self, orb, sat, Nt = 10000):
+    def grid_dists(self):
+        orb = self.orb
+        sat = self.sat
         g = self.sat_grid(orb, sat)
         
-        self.init_time(Nt = Nt)
         d = {}
         for k in g:
-            d[k] = np.zeros(Nt)
+            d[k] = np.zeros(self.Nt)
             
         for i, t in enumerate(self.t):
             self.calc_pos(t)
