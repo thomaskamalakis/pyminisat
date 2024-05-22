@@ -12,11 +12,13 @@ Then install the `virtualenv` package using
 ```
 pip3 install virtualenv
 ```
-or if you are on an externally managed environment, use
+or if you are on an externally managed environment, use:
 ```
 sudo apt install python3-virtualenv
 ```
-In 
+In a folder of your choosing, clone the repo using
+```
+git clone https://github.com/thomaskamalakis/pyminisats
 
 
 
