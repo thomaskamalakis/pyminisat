@@ -303,6 +303,7 @@ class constellation:
            'S2' : ( orb, i_same[2] )
         }
     
+    # Calculate satellite distances inside the assumed grid
     def grid_dists(self):
         orb = self.orb
         sat = self.sat
@@ -318,21 +319,21 @@ class constellation:
                 d[k][i] = self.calc_sat_dist(orb, sat, orb_j, sat_j)
         self.grid_d = d
         return d        
+    
+    # Required link distances to maintain connectivity with the grid
+    # def req_dists(self, Nt = 10000, 
+    #                     orb_i = 0, 
+    #                     sat_i = 0, 
+    #                     orb_j = 1, 
+    #                     neighbours = 3):
+    #     self.req_d = np.zeros([Nt, neighbours])
+    #     self.req_i = np.zeros([Nt, neighbours])
         
-    def req_dists(self, Nt = 10000, 
-                        orb_i = 0, 
-                        sat_i = 0, 
-                        orb_j = 1, 
-                        neighbours = 3):
-        self.init_time(Nt = Nt)        
-        self.req_d = np.zeros([Nt, neighbours])
-        self.req_i = np.zeros([Nt, neighbours])
-        
-        for it, t in enumerate(self.t):
-            self.calc_pos(t)
-            r, i = self.calc_sat_orb_dist(orb_i, sat_i, orb_j)
-            self.req_d[it, :] = r[0:neighbours]
-            self.req_i[it, :] = i[0:neighbours]
+    #     for it, t in enumerate(self.t):
+    #         self.calc_pos(t)
+    #         r, i = self.calc_sat_orb_dist(orb_i, sat_i, orb_j)
+    #         self.req_d[it, :] = r[0:neighbours]
+    #         self.req_i[it, :] = i[0:neighbours]
     
     def __repr__(self):
         st = """Constellation with parameters:

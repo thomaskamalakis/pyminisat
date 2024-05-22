@@ -40,15 +40,21 @@ TRANSMITTER_P = ['sT','theta_T','PT','nT']
 
 
 class satsim:
+    """
+    The satsim class is the main class enabling the simulation of the constellation
+    """
     
+    # Helper function to set the class attributes
     def set_param(self, k, params):
         v = params.get(k, DEFAULTS[k])
         setattr(self, k, v)
-        
+    
+    # Use this to initialize the plot axis to resonable font and line size
     def init_graph(self):
         rc('text', usetex=True)
         rc('font', size=16)
         rc('lines',linewidth=2.0)
+        
     def __init__(self, **kwargs):
         
         # initialize transmitter
@@ -87,18 +93,22 @@ class satsim:
         
         # Calculate receiver sensitivity
         self.receiver.calc_Psens()
-                    
+    
+    # Optimize the F parameter using single thread
     def optimize_F(self, plot_result = False):
         self.constellation.optimize_F(orb = self.orb, sat = self.sat)
-
+    
+    # Optimize the F parameter using multiple threads
     def optimize_F_mp(self, plot_result = False):
         self.constellation.optimize_F_mp(no_cores=self.no_cores)
 
+    # Save simulation parameters
     def save(self):
             
         with open(self.filename, 'wb') as f:
             pickle.dump(self, f)
     
+    # Plot minimum satellite-to-satellite distance for the F parameters assumed in the optimization
     def plot_rmin(self, close_all=False):
         if close_all:
             plt.close('all')
@@ -109,9 +119,11 @@ class satsim:
         plt.ylabel(r'$r_\mathrm{min}\;\mathrm{[Km]}$')
         plt.grid()
     
+    # Estimate link distances for the 3x3 grid assumed
     def calc_grid_dists(self):
         self.dists = self.constellation.grid_dists()
     
+    # Estimate required transmission power  for the 3x3 grid assumed
     def calc_dist_power(self):
 
         self.link = link(tx = self.transmitter,
@@ -135,10 +147,13 @@ class satsim:
                 self.LPS_dB[k][i] = self.link.LPSdB
                 self.L_dB[k][i] = self.link.LdB
                 
-            
+    # Optimize the F parameter, calculate required link distances and optical power
     def simulate(self):
+        self.optimize_F_mp()
         self.calc_grid_dists()
-        
+        self.calc_dist_power()
+
+    # plot required link distances for the 3x3 grid
     def plot_dists(self, subset = None, plot_strs=None,markevery=200):
         if not subset:
             subset = self.constellation.sat_grid(self.orb, self.sat).keys()
@@ -158,7 +173,8 @@ class satsim:
         plt.xlabel(r'$t\;\mathrm{[s]}$')
         
         plt.tight_layout()
-      
+
+    # plot channel gains for the 3x3 grid
     def plot_cg(self,subset = None, plot_strs=None,markevery=200):
         if not subset:
             subset = self.constellation.sat_grid(self.orb, self.sat).keys()
@@ -176,7 +192,8 @@ class satsim:
         plt.xlabel(r'$t\;\mathrm{[s]}$')
         
         plt.tight_layout()
-      
+     
+    # plot channel gains for the 3x3 grid
     def plot_PS(self,subset = None, plot_strs=None,markevery=200):
         if not subset:
             subset = self.constellation.sat_grid(self.orb, self.sat).keys()
@@ -194,7 +211,8 @@ class satsim:
         plt.xlabel(r'$t\;\mathrm{[s]}$')
         
         plt.tight_layout()
-        
+    
+    # plot required transmission power the 3x3 grid
     def plot_Preq(self,subset = None, plot_strs=None,markevery=200):
         if not subset:
             subset = self.constellation.sat_grid(self.orb, self.sat).keys()
@@ -221,5 +239,45 @@ class satsim:
                
     def __str__(self):
         return self.__repr__()
-               
+    
+    # Plot the results of the simulation
+    def plot_results(self):
+        plt.close('all')
+        subset1 = ['U0', 'U1', 'U2', 'S1']
+        strs1 = {
+            'U0' : '-ko',
+            'U1' : '-s',
+            'U2' : '-d',
+            'S1' : '--r'
+            }
+        subset2 = ['L0', 'L1', 'L2', 'S2']
+        strs2 = {
+            'L0' : '-ko',
+            'L1' : '-s',
+            'L2' : '-d',
+            'S2' : '--r'}
+        self.plot_dists(subset=subset1,
+                     plot_strs=strs1)
+
+        self.plot_dists(subset=subset2,
+                     plot_strs=strs2)
+
+        self.plot_cg(subset=subset1,
+                     plot_strs=strs1)
+
+        self.plot_cg(subset=subset2,
+                     plot_strs=strs2)
+
+        self.plot_PS(subset=subset1,
+                     plot_strs=strs1)
+
+        self.plot_PS(subset=subset2,
+                     plot_strs=strs2)
+
+        self.plot_Preq(subset=subset1,
+                     plot_strs=strs1)
+
+        self.plot_Preq(subset=subset2,
+                     plot_strs=strs2)
+
      
