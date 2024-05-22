@@ -20,7 +20,11 @@ In a folder of your choosing, clone the repo using
 ```
 git clone https://github.com/thomaskamalakis/pyminisat
 ```
-Now, start a virtual environment 
+Now, create a virtual environment in the folder
+```
+python3 -m venv pymini
+```
+
 
 
 
