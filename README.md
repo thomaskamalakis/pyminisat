@@ -25,7 +25,10 @@ Now, create a virtual environment in the folder and activate it
 python3 -m venv venv
 source venv/bin/activate
 ```
-
+You can now install the required packages
+```
+pip3 install numpy scipy matplotlib
+```
 
 
 
