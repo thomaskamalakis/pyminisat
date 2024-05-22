@@ -20,9 +20,10 @@ In a folder of your choosing, clone the repo using
 ```
 git clone https://github.com/thomaskamalakis/pyminisat
 ```
-Now, create a virtual environment in the folder
+Now, create a virtual environment in the folder and activate it
 ```
 python3 -m venv venv
+source venv/bin/activate
 ```
 
 
