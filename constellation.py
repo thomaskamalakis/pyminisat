@@ -76,9 +76,7 @@ class constellation:
         self.i = i
         self.sat = sat
         self.orb = orb
-        self.Nt = Nt
-        
-        self.t = np.linspace(0, self.T, self.Nt)
+       
         k = np.arange( self.Norb )
         self.k = k        
         self.Wk = 2 * np.pi * k / self.Norb
@@ -96,31 +94,41 @@ class constellation:
         self.z = np.zeros(self.mm.shape)
         
         self.calc_init_anomalies()
-  
+        self.init_time(Nt = self.Nt)
+        
+    # Initialize time axis
+    def init_time(self, Nt = 10000):
+        self.Nt = Nt
+        self.t = np.linspace(0, self.T, Nt)
+        
     # Calculate the initial values of the satellite anomalies    
     def calc_init_anomalies(self):
         self.theta_km0 = 2 * np.pi * (self.mm) / self.Nsat + 2 * np.pi * (self.kk) * self.F / self.N       
-        
+    
+    # Calculate the anomalies at time t
     def calc_anomalies(self, t):
         self.theta_km = self.theta_km0 + 2 * np.pi / self.T * t
-        
     
+    # Calculate satellite position with respect to perifocal plane
     def calc_pos_alt(self):
         coeff = self.h ** 2 / co.mu
         self.ux = coeff * np.cos(self.theta_km)
         self.uy = coeff * np.sin(self.theta_km)
-                
+    
+    # Calculate satellite position with respect to equitorial plan
     def calc_pos_geo(self):
         for k in range(self.Norb):
             self.x[k, :] = self.Txx[k] * self.ux[k, :] + self.Txy[k] * self.uy[k,:]
             self.y[k, :] = self.Tyx[k] * self.ux[k, :] + self.Tyy[k] * self.uy[k,:]
             self.z[k, :] = self.Tzy * self.uy[k, :]
-            
+    
+    # Calculate satellite positions at time t
     def calc_pos(self, t):
         self.calc_anomalies(t)
         self.calc_pos_alt()
         self.calc_pos_geo()
-        
+    
+    # Draw equatorial plane
     def plot_eq_plane(self, ax, N = 100, plot_str='.', show_pos_x = True):
         
         theta = np.linspace(0, 2*np.pi, N)
@@ -135,7 +143,8 @@ class constellation:
             z = z[i]
             
         ax.plot3D(x,y,z,plot_str) 
-
+    
+    # Initialize a 3D figure for constellation plotting 
     def init_fig(self, include_axis = False):
         ax = plt.axes(projection='3d')
         s = self.r
@@ -160,22 +169,15 @@ class constellation:
         ax.axis('off')
         return ax
     
+    # Plot a satellite orbit in the 3D coordinate system
     def plot_orb(self, ax, k = 0, plot_str='-o'):
         ax.plot3D(self.x[k, :],self.y[k, :],self.z[k, :],plot_str)
         
-    
-    def plot_orb_shade(self, ax, k = 0, plot_str='-bo', shade_str='-ro'):
-        x = np.squeeze( self.x[k,:] )
-        y = np.squeeze( self.y[k,:] )
-        z = np.squeeze( self.z[k,:] )
-        
-        #ax.plot3D(x,y,z,shade_str)
-        i = np.where( (x > 0) )
-        ax.plot(x[i],y[i],z[i],plot_str,markersize=2) 
-        
+    # Plot a single satellite in the 3D coordinate system
     def plot_sat(self, ax, k = 0, m = 0, plot_str='o'):
         ax.plot3D(self.x[k, m],self.y[k, m],self.z[k, m],plot_str) 
-                           
+        
+    # Calculate the distance between all satellites in orbit i and j
     def calc_inter_dist(self, i, j):
         xi = self.x[i, :]
         yi = self.y[i, :]
@@ -193,6 +195,7 @@ class constellation:
         
         return np.sqrt(r)
     
+    # Calculate distance between satellite (orb_i, sat_i) and (orb_j, sat_j)
     def calc_sat_dist(self, orb_i, sat_i, orb_j, sat_j):
         xi = self.x[orb_i, sat_i]
         yi = self.y[orb_i, sat_i]
@@ -205,6 +208,7 @@ class constellation:
         
         return np.sqrt(r)
     
+    # Calculate shortest distance between satellite (orb_i) and (sat_i) and all other satellites     
     def calc_nearest_dist(self, orb_i, sat_i):
         Dx = self.x - self.x[orb_i, sat_i]
         Dy = self.y - self.y[orb_i, sat_i]
@@ -213,15 +217,13 @@ class constellation:
         r[orb_i, sat_i] = np.inf
         rmin = np.min(r)        
         return rmin
-        
+    
+    # Estimate shortest distance between satellite (orb_i, sat_i) and the satellites of orbit orb_j    
     def calc_sat_orb_dist(self, orb_i, sat_i, orb_j):
         r = self.calc_sat_dist(orb_i, sat_i, orb_j, self.m)
         sat_j = np.argsort(r)
         return r[sat_j], sat_j
-    
-    def init_time(self, Nt = 10000):
-        self.Nt = Nt
-        self.t = np.linspace(0, self.T, Nt)
+
         
     def optimize_F(self, Nt = 10000, orb = 0, sat = 0):
         self.init_time(Nt = Nt)
