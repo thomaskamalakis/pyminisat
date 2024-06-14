@@ -84,7 +84,7 @@ class constellation:
         self.Tyx = np.sin( self.Wk )
         self.Txy = -np.sin(self.Wk) * np.cos(self.i)
         self.Tyy = np.cos(self.Wk) * np.cos(self.i)
-        self.Tzy = -np.sin(i)
+        self.Tzy = np.sin(i)
         m = np.arange( self.Nsat )    
         self.m = m
         
