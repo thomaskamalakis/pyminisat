@@ -30,5 +30,15 @@ You can now install the required packages
 pip3 install numpy scipy matplotlib
 ```
 
+## Usage
+You can use the `Python` script `net_example.py` to run your first simulation. Just issue:
+```
+python3 net_example.py
+```
+If all goes well you should see some plots popping out which describe the required optical power for intersatellite optical links in the standard Starlink architecture.
+
+## More documentation, please!
+
+We have submitted this work for publication in a Journal so hopefully after it has been accepted we will provide a more detailed implementation.
 
 
