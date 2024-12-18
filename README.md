@@ -41,7 +41,9 @@ If all goes well you should see some plots popping out which describe the requir
 
 The `satsim` class in `satnet.py` is the main class that can be used to setup the simulation. When initializing the class the user may change any of the default arguments using keyword arguments.
 
--`LMdB` is the link margin assumed [in dB] 3
+-`LMdB` is the link margin assumed in dB (defaults to 3dB),
+-`alt` is the amplitude of the satellites in meters (defaults to 550,000 meters),
+-`Nsat` is the number of satellites per orbit (defaults to 66),
     
 
 ## More documentation, please!
