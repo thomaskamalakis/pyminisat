@@ -37,6 +37,12 @@ python3 net_example.py
 ```
 If all goes well you should see some plots popping out which describe the required optical power for intersatellite optical links in the standard Starlink architecture.
 
+## Classes
+
+The `satsim` class in `satnet.py` is the main class that can be used to setup the simulation. When initializing the class the user may change any of the default arguments using keyword arguments.
+-`LMdB` is the link margin assumed [in dB] 3
+    
+
 ## More documentation, please!
 
 We have submitted this work for publication in a Journal so hopefully after it has been accepted we will provide a more detailed implementation.
