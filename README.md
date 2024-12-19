@@ -79,6 +79,14 @@ The `satsim` class in `satnet.py` is the main class that can be used to setup th
 
 -`sT` is the pointing error standard deviation of the transmitter in rad (defaults to 1e-6, i.e. 1μrad),
 
+-`Nt` is the number of points considered in the time axis within one orbital period (defaults to 10000),
+
+-`filename` is the filename for saving the simulation data and results (defaults to `sat.data`),
+
+-`sat` and `orb` is the index of the satellite and the orbit assumed in the calculations. Since the constellation is symmetric, it does not matter which satellite and orbit we specify. Both default to a value of 1, i.e. the satellite (1,1) is assumed in the calculations.
+
+-`no_cores` is the number of cores used (default to the number of cores reported by `os.cpu_count`)
+
 
 
 
