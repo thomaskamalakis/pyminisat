@@ -113,15 +113,12 @@ from satnet import satsim
 s = satsim(Nsat = 132, Norb = 48)
 s.simulate()
 ```
-This method estimates the optimal phasing parameter `F` for the constellation at hand and then estimates the distances between satellites and the required transmission power at every time instance in the time axis. 
+This method estimates the optimal phasing parameter `F` for the constellation at hand and then estimates the distances between satellites and the required transmission power at every time instance in the time axis. Should we need to plot the results of the optimization regarding the `F` parameter we use the `plot_rmin` method which plots the results of the minimumm intersatellite distance with respects to the various values of `F` considered.
 
+## Simulation example
 
+The `net_example.py` file provides a further example of how the `satsim` class can be invoked.
 
+## Under the hood
 
-
-
-## More documentation, please!
-
-We have submitted this work for publication in a Journal so hopefully after it has been accepted we will provide a more detailed implementation.
-
-
+We plan to provide further documentation regarding the innerworkings of the `satsim` class soon. 
