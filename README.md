@@ -37,7 +37,7 @@ python3 net_example.py
 ```
 If all goes well you should see some plots popping out which describe the required optical power for intersatellite optical links in the standard Starlink architecture.
 
-## Classes
+## The `satsim` class
 
 The `satsim` class in `satnet.py` is the main class that can be used to setup the simulation. When initializing the class the user may change any of the default arguments using keyword arguments.
 
@@ -87,6 +87,33 @@ The `satsim` class in `satnet.py` is the main class that can be used to setup th
 
 -`no_cores` is the number of cores used (default to the number of cores reported by `os.cpu_count`)
 
+## Initialization of the `satsim` class
+
+To initialize the `satsim` class with the default parameters just use:
+
+```
+from satnet import satsim
+s = satsim()
+```
+
+To change some of the simulation parameters use the keyword arguments as discussed previously. For example,
+
+```
+from satnet import satsim
+s = satsim(Nsat = 132, Norb = 48)
+```
+
+initializes a simulation object where a 48 satellites of 132 satellites per each is assumed.
+
+## Running the simulations
+
+To run the simulation you simply use the `simulate` method of the `satsim` class. 
+```
+from satnet import satsim
+s = satsim(Nsat = 132, Norb = 48)
+s.simulate()
+```
+This method estimates the optimal phasing parameter `F` for the constellation at hand and then estimates the distances between satellites and the required transmission power at every time instance in the time axis. 
 
 
 
