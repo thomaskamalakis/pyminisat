@@ -67,6 +67,21 @@ The `satsim` class in `satnet.py` is the main class that can be used to setup th
 
 -`FndB` is the noise figure of the detector in dB (defaults to 3dB),
 
+-`TK` is the detector noise temperature is K (defaults to 300K),
+
+-`DR` is the diameter of the receiver in m (defaults to 80e-3, i.e. 80mm),
+
+-`nR` is the efficiency of the detector (defaults to 0.8, i.e. 80%),
+
+-`nT` is the efficiency of the transmitter (defaults to 0.8, i.e. 80%),
+
+-`sR` is the pointing error standard deviation of the detector in rad (defaults to 1e-6, i.e. 1μrad),
+
+-`sT` is the pointing error standard deviation of the transmitter in rad (defaults to 1e-6, i.e. 1μrad),
+
+
+
+
 
 
 
