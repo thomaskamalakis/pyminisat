@@ -46,7 +46,29 @@ The `satsim` class in `satnet.py` is the main class that can be used to setup th
 -`alt` is the amplitude of the satellites in meters (defaults to 550,000 meters),
 
 -`Nsat` is the number of satellites per orbit (defaults to 66),
-    
+
+-`Norb` is the number of orbits considered in the constellation (defaults to 24),
+
+-`F` is the phasing factor of the constellation (defaults to 13),
+
+-`i` is the inclination in radians (defaults to 0.925 rad, i.e. 53 degrees),
+
+-`target_BER` is the target value of the bit error rate (BER) (defaults to 1e-12),
+
+-`l` is the optical wavelength of the laser link in meters (defaults to 1.55e-6, i.e. 1550nm),
+
+-`eta` is the internal quantum efficiency of the photodetector (defaults to 0.8 - 80%),
+
+-`redB` is the extinction ratio of the laser source in dB (defaults to 20dB),
+
+-`Rb` is the target data rate in b/s (defaults to 10^10 b/s, i.e. 10Gb/s),
+
+-`RL` is the load resistor at the detector in Ohm (defaults to 100 Ohm),
+
+-`FndB` is the noise figure of the detector in dB (defaults to 3dB),
+
+
+
 
 ## More documentation, please!
 
